@@ -28,20 +28,20 @@ type getResponse struct {
 }
 
 func (g *getResponse) Process(payload *dto.GetResponseV1Payload) (*int64, error) {
-	switch {
-	case payload.Type == "contact_added":
+	switch payload.Type {
+	case "contact_added":
 		return g.contactSubscribed(payload)
-	case payload.Type == "contact_removed_link":
+	case "contact_removed_link":
 		return g.contactUnsubscribed(payload)
-	case payload.Type == "contact_moved":
+	case "contact_moved":
 		return g.contactMoved(payload)
-	case payload.Type == "contact_copied":
+	case "contact_copied":
 		return g.contactCopied(payload)
-	case payload.Type == "contact_opened_message":
+	case "contact_opened_message":
 		return g.contactOpenedMessage(payload)
-	case payload.Type == "contact_clicked_message_link":
+	case "contact_clicked_message_link":
 		return g.contactClickedMessageLink(payload)
-	case payload.Type == "contact_clicked_sms_link":
+	case "contact_clicked_sms_link":
 		return g.contactClickedSmsLink(payload)
 	default:
 		return nil, fmt.Errorf("invalid message type: %s", payload.Type)
@@ -245,38 +245,38 @@ func (g *getResponse) sendToKIS(payload *dto.GetResponseV1Payload) error {
 	return nil
 }
 
-func (g *getResponse) savePayload(payload *dto.GetResponseV1Payload) (savePayloadIds, error) {
+func (g *getResponse) savePayload(payload *dto.GetResponseV1Payload) (*savePayloadIds, error) {
 	account, err := g.saveAccount(&payload.Account)
 	if err != nil {
-		return savePayloadIds{}, err
+		return nil, err
 	}
 	campaign, err := g.saveCampaign(&payload.Contact.Campaign)
 	if err != nil {
-		return savePayloadIds{}, err
+		return nil, err
 	}
 	sourceCampaign, err := g.saveSourceCampaign(&payload.Contact.SourceCampaign)
 	if err != nil {
-		return savePayloadIds{}, err
+		return nil, err
 	}
 	customField, err := g.saveCustomField(&payload.Contact.PhoneNumber)
 	if err != nil {
-		return savePayloadIds{}, err
+		return nil, err
 	}
 	contact, err := g.saveContact(&payload.Contact, campaign, customField)
 	if err != nil {
-		return savePayloadIds{}, err
+		return nil, err
 	}
 	message, err := g.saveMessage(&payload.Message)
 	if err != nil {
-		return savePayloadIds{}, err
+		return nil, err
 	}
 	clickTrack, err := g.saveClickTrack(&payload.ClickTrack)
 	if err != nil {
-		return savePayloadIds{}, err
+		return nil, err
 	}
 	sms, err := g.saveSMS(&payload.SMS)
 	if err != nil {
-		return savePayloadIds{}, err
+		return nil, err
 	}
 
 	ids := savePayloadIds{
@@ -288,7 +288,7 @@ func (g *getResponse) savePayload(payload *dto.GetResponseV1Payload) (savePayloa
 		clickTrackId:     clickTrack,
 		smsId:            sms,
 	}
-	return ids, nil
+	return &ids, nil
 }
 
 func (g *getResponse) saveAccount(accountIn *dto.Account) (*int64, error) {
@@ -346,7 +346,8 @@ func (g *getResponse) saveCustomField(customFieldIn *dto.CustomField) (*int64, e
 	return &customField.ID, nil
 }
 
-func (g *getResponse) saveContact(contactIn *dto.Contact, campaignID *int64, customFieldID *int64) (*int64, error) {
+func (g *getResponse) saveContact(
+	contactIn *dto.Contact, campaignID *int64, customFieldID *int64) (*int64, error) {
 	contact := datastruct.Contact{
 		ContactId:   contactIn.ContactId,
 		Email:       contactIn.Email,
