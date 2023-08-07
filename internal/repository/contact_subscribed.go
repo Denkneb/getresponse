@@ -3,7 +3,7 @@ package repository
 import (
 	"errors"
 	"getresponse/internal/datastruct"
-	"log"
+	log "github.com/sirupsen/logrus"
 )
 
 type ContactSubscribedQuery interface {
@@ -20,7 +20,7 @@ func (q *contactSubscribedQuery) CreateContactSubscribed(contactSubscribed *data
 		"Account",
 	).Create(&contactSubscribed).Error
 	if err != nil {
-		log.Println(err)
+		log.Info(err)
 		return errors.New("connot create contactSubscribed")
 	}
 	return nil

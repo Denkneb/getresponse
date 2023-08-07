@@ -3,10 +3,10 @@ package repository
 import (
 	"context"
 	"fmt"
-	"log"
+	"github.com/spf13/viper"
 
 	kafkago "github.com/segmentio/kafka-go"
-	"github.com/spf13/viper"
+	log "github.com/sirupsen/logrus"
 )
 
 type Producer interface {
@@ -41,9 +41,9 @@ func (k *producer) WriteMessages(ctx context.Context) error {
 		case m := <-k.Messages:
 			err := k.Writer.WriteMessages(ctx, m)
 			if err != nil {
-				log.Println(err)
+				log.Warning(err)
 			}
-			log.Println("sent message")
+			log.Debug("sent message")
 
 			select {
 			case <-ctx.Done():

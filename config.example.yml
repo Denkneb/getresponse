@@ -4,6 +4,8 @@ database:
   host: "localhost"
   port: 5432
   dbname: "getresponse"
+logger:
+  loglevel: "debug"
 kafka:
   host: "localhost"
   port: 9092

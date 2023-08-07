@@ -3,11 +3,11 @@ package repository
 import (
 	"database/sql"
 	"fmt"
-	"log"
-
 	"github.com/spf13/viper"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+
+	log "github.com/sirupsen/logrus"
 )
 
 type DAO interface {

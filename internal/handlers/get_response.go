@@ -7,11 +7,11 @@ import (
 	"getresponse/internal/datastruct"
 	"getresponse/internal/dto"
 	"getresponse/internal/repository"
-	"log"
 	"time"
+	"github.com/spf13/viper"
 
 	kafkago "github.com/segmentio/kafka-go"
-	"github.com/spf13/viper"
+	log "github.com/sirupsen/logrus"
 )
 
 type GetResponse interface {
@@ -51,7 +51,7 @@ func (g *getResponse) Process(payload *dto.GetResponseV1Payload) (*int64, error)
 func (g *getResponse) contactSubscribed(payload *dto.GetResponseV1Payload) (*int64, error) {
 	ids, err := g.savePayload(payload)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("contactSubscribed: %w", err)
 	}
 	contactSubscribed := datastruct.ContactSubscribed{
 		OccurredAt: payload.Event.OccurredAt,
@@ -60,13 +60,13 @@ func (g *getResponse) contactSubscribed(payload *dto.GetResponseV1Payload) (*int
 	}
 	err = g.dao.NewContactSubscribedQuery().CreateContactSubscribed(&contactSubscribed)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("contactSubscribed: %w", err)
 	}
 
 	err = g.sendToKIS(payload)
 	if err != nil {
 		errText := fmt.Sprintf("filed send to KIS, type: %s, error: %s", payload.Type, err)
-		log.Println(errText)
+		log.Debug(errText)
 		return nil, errors.New(errText)
 	}
 
@@ -76,7 +76,7 @@ func (g *getResponse) contactSubscribed(payload *dto.GetResponseV1Payload) (*int
 func (g *getResponse) contactUnsubscribed(payload *dto.GetResponseV1Payload) (*int64, error) {
 	ids, err := g.savePayload(payload)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("contactUnsubscribed: %w", err)
 	}
 	contactUnsubscribed := datastruct.ContactUnsubscribed{
 		OccurredAt: payload.Event.OccurredAt,
@@ -85,13 +85,13 @@ func (g *getResponse) contactUnsubscribed(payload *dto.GetResponseV1Payload) (*i
 	}
 	err = g.dao.NewContactUnsubscribedQuery().CreateContactUnsubscribed(&contactUnsubscribed)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("contactUnsubscribed: %w", err)
 	}
 
 	err = g.sendToKIS(payload)
 	if err != nil {
 		errText := fmt.Sprintf("filed send to KIS, type: %s, error: %s", payload.Type, err)
-		log.Println(errText)
+		log.Debug(errText)
 		return nil, errors.New(errText)
 	}
 
@@ -101,7 +101,7 @@ func (g *getResponse) contactUnsubscribed(payload *dto.GetResponseV1Payload) (*i
 func (g *getResponse) contactMoved(payload *dto.GetResponseV1Payload) (*int64, error) {
 	ids, err := g.savePayload(payload)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("contactMoved: %w", err)
 	}
 	contactMoved := datastruct.ContactMoved{
 		OccurredAt:     payload.Event.OccurredAt,
@@ -112,13 +112,13 @@ func (g *getResponse) contactMoved(payload *dto.GetResponseV1Payload) (*int64, e
 	}
 	err = g.dao.NewContactMovedQuery().CreateContactMoved(&contactMoved)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("contactMoved: %w", err)
 	}
 
 	err = g.sendToKIS(payload)
 	if err != nil {
 		errText := fmt.Sprintf("filed send to KIS, type: %s, error: %s", payload.Type, err)
-		log.Println(errText)
+		log.Debug(errText)
 		return nil, errors.New(errText)
 	}
 
@@ -128,7 +128,7 @@ func (g *getResponse) contactMoved(payload *dto.GetResponseV1Payload) (*int64, e
 func (g *getResponse) contactCopied(payload *dto.GetResponseV1Payload) (*int64, error) {
 	ids, err := g.savePayload(payload)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("contactCopied: %w", err)
 	}
 	contactCopied := datastruct.ContactCopied{
 		OccurredAt:     payload.Event.OccurredAt,
@@ -139,13 +139,13 @@ func (g *getResponse) contactCopied(payload *dto.GetResponseV1Payload) (*int64, 
 	}
 	err = g.dao.NewContactCopiedQuery().CreateContactCopied(&contactCopied)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("contactCopied: %w", err)
 	}
 
 	err = g.sendToKIS(payload)
 	if err != nil {
 		errText := fmt.Sprintf("filed send to KIS, type: %s, error: %s", payload.Type, err)
-		log.Println(errText)
+		log.Debug(errText)
 		return nil, errors.New(errText)
 	}
 
@@ -155,7 +155,7 @@ func (g *getResponse) contactCopied(payload *dto.GetResponseV1Payload) (*int64, 
 func (g *getResponse) contactOpenedMessage(payload *dto.GetResponseV1Payload) (*int64, error) {
 	ids, err := g.savePayload(payload)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("contactOpenedMessage: %w", err)
 	}
 	contactOpenedMessage := datastruct.ContactOpenedMessage{
 		OccurredAt: payload.Event.OccurredAt,
@@ -165,13 +165,13 @@ func (g *getResponse) contactOpenedMessage(payload *dto.GetResponseV1Payload) (*
 	}
 	err = g.dao.NewContactOpenedMessageQuery().CreateContactOpenedMessage(&contactOpenedMessage)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("contactOpenedMessage: %w", err)
 	}
 
 	err = g.sendToKIS(payload)
 	if err != nil {
 		errText := fmt.Sprintf("filed send to KIS, type: %s, error: %s", payload.Type, err)
-		log.Println(errText)
+		log.Debug(errText)
 		return nil, errors.New(errText)
 	}
 
@@ -181,7 +181,7 @@ func (g *getResponse) contactOpenedMessage(payload *dto.GetResponseV1Payload) (*
 func (g *getResponse) contactClickedMessageLink(payload *dto.GetResponseV1Payload) (*int64, error) {
 	ids, err := g.savePayload(payload)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("contactClickedMessageLink: %w", err)
 	}
 	contactLinkClicked := datastruct.ContactLinkClicked{
 		OccurredAt: payload.Event.OccurredAt,
@@ -192,13 +192,13 @@ func (g *getResponse) contactClickedMessageLink(payload *dto.GetResponseV1Payloa
 	}
 	err = g.dao.NewContactLinkClickedQuery().CreateContactLinkClicked(&contactLinkClicked)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("contactClickedMessageLink: %w", err)
 	}
 
 	err = g.sendToKIS(payload)
 	if err != nil {
 		errText := fmt.Sprintf("filed send to KIS, type: %s, error: %s", payload.Type, err)
-		log.Println(errText)
+		log.Debug(errText)
 		return nil, errors.New(errText)
 	}
 
@@ -208,7 +208,7 @@ func (g *getResponse) contactClickedMessageLink(payload *dto.GetResponseV1Payloa
 func (g *getResponse) contactClickedSmsLink(payload *dto.GetResponseV1Payload) (*int64, error) {
 	ids, err := g.savePayload(payload)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("contactClickedSmsLink: %w", err)
 	}
 	contactSmsLinkClicked := datastruct.ContactSmsLinkClicked{
 		OccurredAt: payload.Event.OccurredAt,
@@ -219,13 +219,13 @@ func (g *getResponse) contactClickedSmsLink(payload *dto.GetResponseV1Payload) (
 	}
 	err = g.dao.NewContactSmsLinkClickedQuery().CreateContactSmsLinkClicked(&contactSmsLinkClicked)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("contactClickedSmsLink: %w", err)
 	}
 
 	err = g.sendToKIS(payload)
 	if err != nil {
 		errText := fmt.Sprintf("filed send to KIS, type: %s, error: %s", payload.Type, err)
-		log.Println(errText)
+		log.Debug(errText)
 		return nil, errors.New(errText)
 	}
 
@@ -235,7 +235,7 @@ func (g *getResponse) contactClickedSmsLink(payload *dto.GetResponseV1Payload) (
 func (g *getResponse) sendToKIS(payload *dto.GetResponseV1Payload) error {
 	value, _ := json.Marshal(payload)
 	key := viper.Get("kafka.producer.key").(string)
-	log.Printf("sendding message to kafka: %+v\n", payload)
+	log.WithFields(log.Fields{"payload": payload}).Debug("sendding message to kafka")
 	message := kafkago.Message{
 		Value: value,
 		Key:   []byte(fmt.Sprintf("%v", key)),
@@ -248,35 +248,35 @@ func (g *getResponse) sendToKIS(payload *dto.GetResponseV1Payload) error {
 func (g *getResponse) savePayload(payload *dto.GetResponseV1Payload) (*savePayloadIds, error) {
 	account, err := g.saveAccount(&payload.Account)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("savePayload: %w", err)
 	}
 	campaign, err := g.saveCampaign(&payload.Contact.Campaign)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("savePayload: %w", err)
 	}
 	sourceCampaign, err := g.saveSourceCampaign(&payload.Contact.SourceCampaign)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("savePayload: %w", err)
 	}
 	customField, err := g.saveCustomField(&payload.Contact.PhoneNumber)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("savePayload: %w", err)
 	}
 	contact, err := g.saveContact(&payload.Contact, campaign, customField)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("savePayload: %w", err)
 	}
 	message, err := g.saveMessage(&payload.Message)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("savePayload: %w", err)
 	}
 	clickTrack, err := g.saveClickTrack(&payload.ClickTrack)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("savePayload: %w", err)
 	}
 	sms, err := g.saveSMS(&payload.SMS)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("savePayload: %w", err)
 	}
 
 	ids := savePayloadIds{
@@ -297,7 +297,7 @@ func (g *getResponse) saveAccount(accountIn *dto.Account) (*int64, error) {
 	}
 	err := g.dao.NewAccountQuery().CreateAccount(&account)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("saveAccount: %w", err)
 	}
 	return &account.ID, nil
 }
@@ -310,7 +310,7 @@ func (g *getResponse) saveCampaign(campaignIn *dto.Campaign) (*int64, error) {
 	}
 	err := g.dao.NewCampaignQuery().CreateCampaign(&campaign)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("saveCampaign: %w", err)
 	}
 
 	return &campaign.ID, nil
@@ -325,7 +325,7 @@ func (g *getResponse) saveSourceCampaign(sourceCampaignIn *dto.SourceCampaign) (
 	if *sourceCampaignIn != (dto.SourceCampaign{}) {
 		err := g.dao.NewCampaignQuery().CreateCampaign(&sourceCampaign)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("saveSourceCampaign: %w", err)
 		}
 	}
 	return &sourceCampaign.ID, nil
@@ -339,7 +339,7 @@ func (g *getResponse) saveCustomField(customFieldIn *dto.CustomField) (*int64, e
 	if *customFieldIn != (dto.CustomField{}) {
 		err := g.dao.NewCustomFieldQuery().CreateCustomField(&customField)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("saveCustomField: %w", err)
 		}
 	}
 
@@ -362,7 +362,7 @@ func (g *getResponse) saveContact(
 	}
 	err := g.dao.NewContactQuery().CreateContact(&contact)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("saveContact: %w", err)
 	}
 
 	return &contact.ID, nil
@@ -379,7 +379,7 @@ func (g *getResponse) saveMessage(messageIn *dto.Message) (*int64, error) {
 	if *messageIn != (dto.Message{}) {
 		err := g.dao.NewMessageQuery().CreateMessage(&message)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("saveMessage: %w", err)
 		}
 	}
 
@@ -396,7 +396,7 @@ func (g *getResponse) saveClickTrack(clickTrackIn *dto.ClickTrack) (*int64, erro
 	if *clickTrackIn != (dto.ClickTrack{}) {
 		err := g.dao.NewClickTrackQuery().CreateClickTrack(&clickTrack)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("saveClickTrack: %w", err)
 		}
 	}
 
@@ -412,7 +412,7 @@ func (g *getResponse) saveSMS(smsIn *dto.SMS) (*int64, error) {
 	if *smsIn != (dto.SMS{}) {
 		err := g.dao.NewSMSQuery().CreateSMS(&sms)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("saveSMS: %w", err)
 		}
 	}
 

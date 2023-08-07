@@ -3,7 +3,7 @@ package repository
 import (
 	"errors"
 	"getresponse/internal/datastruct"
-	"log"
+	log "github.com/sirupsen/logrus"
 )
 
 type ContactMovedQuery interface {
@@ -22,7 +22,7 @@ func (q *contactMovedQuery) CreateContactMoved(contactMoved *datastruct.ContactM
 		"CampaignTarget",
 	).Create(&contactMoved).Error
 	if err != nil {
-		log.Println(err)
+		log.Info(err)
 		return errors.New("connot create contactMoved")
 	}
 	return nil

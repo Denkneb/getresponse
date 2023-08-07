@@ -6,7 +6,7 @@ import (
 	"getresponse/internal/repository"
 	"getresponse/internal/rest"
 	kafkago "github.com/segmentio/kafka-go"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 )
 
@@ -32,12 +32,14 @@ func (webhook *webhookGetResponse) Webhook() http.HandlerFunc {
 		var getresponsePayload dto.GetResponseV1Payload
 		err := json.NewDecoder(r.Body).Decode(&getresponsePayload)
 		if err != nil {
+			log.WithFields(log.Fields{"body": err}).Info("Decode error")
 			rest.WriteError(w, http.StatusBadRequest, err)
 			return
 		}
-		log.Printf("getting payload -> %+v\n", getresponsePayload)
+		log.WithFields(log.Fields{"payload": getresponsePayload}).Debug("getting payload")
 		id, err := webhook.NewGetResponse().Process(&getresponsePayload)
 		if err != nil {
+			log.Printf("webhook: %v", err)
 			rest.WriteError(w, http.StatusBadRequest, err)
 			return
 		}

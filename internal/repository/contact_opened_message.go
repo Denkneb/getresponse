@@ -3,7 +3,7 @@ package repository
 import (
 	"errors"
 	"getresponse/internal/datastruct"
-	"log"
+	log "github.com/sirupsen/logrus"
 )
 
 type ContactOpenedMessageQuery interface {
@@ -21,7 +21,7 @@ func (q *contactOpenedMessageQuery) CreateContactOpenedMessage(contactOpenedMess
 		"Message",
 	).Create(&contactOpenedMessage).Error
 	if err != nil {
-		log.Println(err)
+		log.Info(err)
 		return errors.New("connot create contactOpenedMessage")
 	}
 	return nil

@@ -3,7 +3,7 @@ package repository
 import (
 	"errors"
 	"getresponse/internal/datastruct"
-	"log"
+	log "github.com/sirupsen/logrus"
 )
 
 type CampaignQuery interface {
@@ -18,7 +18,7 @@ func (q *campaignQuery) CreateCampaign(campaign *datastruct.Campaign) error {
 	if err != nil {
 		err = db.Select("CampaignId", "Name", "Href").Create(&campaign).Error
 		if err != nil {
-			log.Println(err)
+			log.Info(err)
 			return  errors.New("connot create campaign")
 		}
 	}

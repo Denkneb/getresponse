@@ -3,7 +3,7 @@ package repository
 import (
 	"errors"
 	"getresponse/internal/datastruct"
-	"log"
+	log "github.com/sirupsen/logrus"
 )
 
 type ContactLinkClickedQuery interface {
@@ -22,7 +22,7 @@ func (q *contactLinkClickedQuery) CreateContactLinkClicked(contactLinkClicked *d
 		"ClickTrack",
 	).Create(&contactLinkClicked).Error
 	if err != nil {
-		log.Println(err)
+		log.Info(err)
 		return errors.New("connot create contactLinkClicked")
 	}
 	return nil

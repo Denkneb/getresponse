@@ -3,7 +3,7 @@ package repository
 import (
 	"errors"
 	"getresponse/internal/datastruct"
-	"log"
+	log "github.com/sirupsen/logrus"
 )
 
 type AccountQuery interface {
@@ -18,7 +18,7 @@ func (q *accountQuery) CreateAccount(account *datastruct.Account) error {
 	if err != nil {
 		err = db.Select("AccountId").Create(&account).Error
 		if err != nil {
-			log.Println(err)
+			log.Info(err)
 			return errors.New("connot create account")
 		}
 	}

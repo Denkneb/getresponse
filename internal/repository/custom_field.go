@@ -3,7 +3,7 @@ package repository
 import (
 	"errors"
 	"getresponse/internal/datastruct"
-	"log"
+	log "github.com/sirupsen/logrus"
 )
 
 type CustomFieldQuery interface {
@@ -18,7 +18,7 @@ func (q *customFieldQuery) CreateCustomField(customField *datastruct.CustomField
 	if err != nil {
 		err = db.Select("FieldId", "Href").Create(&customField).Error
 		if err != nil {
-			log.Println(err)
+			log.Info(err)
 			return errors.New("connot create customField")
 		}
 	}

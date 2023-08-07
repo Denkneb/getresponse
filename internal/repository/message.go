@@ -3,7 +3,7 @@ package repository
 import (
 	"errors"
 	"getresponse/internal/datastruct"
-	"log"
+	log "github.com/sirupsen/logrus"
 )
 
 type MessageQuery interface {
@@ -24,7 +24,7 @@ func (q *messageQuery) CreateMessage(message *datastruct.Message) error {
 			"Subject",
 		).Create(&message).Error
 		if err != nil {
-			log.Println(err)
+			log.Info(err)
 			return errors.New("connot create message")
 		}
 	}

@@ -6,11 +6,13 @@ import (
 	"getresponse/internal/repository"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	kafkago "github.com/segmentio/kafka-go"
 	"github.com/spf13/viper"
 	"golang.org/x/sync/errgroup"
-	"log"
 	"net/http"
+	"os"
+
+	kafkago "github.com/segmentio/kafka-go"
+	log "github.com/sirupsen/logrus"
 )
 
 func main() {
@@ -22,6 +24,21 @@ func main() {
 	if err != nil {
 		log.Fatalln("cannot read from a config")
 	}
+
+	// Logs
+	level, ok := viper.Get("logger.loglevel").(string)
+	if !ok {
+        level = "debug"
+    }
+	loglevel, err := log.ParseLevel(level)
+    if err != nil {
+        loglevel = log.DebugLevel
+    }
+    log.SetLevel(loglevel)
+	log.SetLevel(loglevel)
+	log.SetFormatter(&log.JSONFormatter{})
+	log.SetReportCaller(true)
+	log.SetOutput(os.Stdout)
 
 	// DB
 	db, err := repository.NewDB()

@@ -3,7 +3,7 @@ package repository
 import (
 	"errors"
 	"getresponse/internal/datastruct"
-	"log"
+	log "github.com/sirupsen/logrus"
 )
 
 type ContactQuery interface {
@@ -30,7 +30,7 @@ func (q *contactQuery) CreateContact(contact *datastruct.Contact) error {
 	if err != nil {
 		err = db.Select(fields).Create(&contact).Error
 		if err != nil {
-			log.Println(err)
+			log.Info(err)
 			return errors.New("connot create contact")
 		}
 	}
